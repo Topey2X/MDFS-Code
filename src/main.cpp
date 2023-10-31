@@ -1,13 +1,12 @@
 #include <Arduino.h>
-
 #include "servo.hpp"
 #include "button.hpp"
 #include "motor.hpp"
 #include "arm.hpp"
 #include "misc.hpp"
+#include "steppermotor.hpp"
 
 const int pin_Button = 10;
-
 const int pin_Servo1 = 8;
 const int pin_Servo2  = 9;
 
@@ -23,6 +22,12 @@ const int pin_Motor1_In2 = 5;
 const int pin_Motor2_PWM = 2;
 const int pin_Motor2_In1 = 3;
 const int pin_Motor2_In2 = 4;
+
+const int pin_Stepper_Step = 44;
+const int pin_Stepper_Dir = 45;
+const int pin_Stepper_Sleep = 46;
+const int pin_Stepper_Reset = 47;
+
 
 Button button = Button(pin_Button);
 
@@ -40,81 +45,71 @@ Servo* servo2 = new Servo(pin_Servo2, true);
 
 Arm arm_tennis = Arm(servo1, limit1_down, limit1_up, motor1);
 Arm arm_squash = Arm(servo2, limit2_down, limit2_up, motor2);
+StepperMotor nema17 = StepperMotor(pin_Stepper_Step, pin_Stepper_Dir, pin_Stepper_Sleep, pin_Stepper_Reset);
+
 
 STATE state = STATE::Start;
 
 auto ms = millis();
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
+  
+  // Initialize serial communication at 9600 baud.
+  Serial.begin(9600);
+
+  // Print the message to the serial monitor
+  Serial.println("Waiting for command...");
 }
 
+
+
 void loop() {
-  switch(state) {
-    case Start:
-      while (not button.checkPressed()) {
-        blink();
-      }
-      state = STATE::Arm_Tennis_Down;
-      break;
+  // Check if data is available to read from the serial port
+  if (Serial.available()) {
+    // Read the incoming byte
+    String command = Serial.readStringUntil('\n');
 
-    case Arm_Tennis_Down:
-      arm_tennis.Down();
-      state = STATE::Arm_Tennis_Collect;
-      break;
+    // Remove any whitespace or newline characters
+    command.trim();
 
-    case Arm_Tennis_Collect:
-      arm_tennis.Collect();
-      state = STATE::Arm_Tennis_Up;
-      break;
+    // Parse the received command and execute the corresponding function
+if (command == "RU") {
+  arm_tennis.Up();
+} else if (command == "RD") {
+  arm_tennis.Down();
+} else if (command == "RC") {
+  arm_tennis.Collect();
+} else if (command == "RL") {
+  arm_tennis.Deposit();
+} else if (command == "RE") {
+  arm_tennis.ESTOP();
+} else if (command == "LU") {
+  arm_squash.Up();
+} else if (command == "LD") {
+  arm_squash.Down();
+} else if (command == "LC") {
+  arm_squash.Collect();
+} else if (command == "LL") {
+  arm_squash.Deposit();
+} else if (command == "LE") {
+  arm_squash.ESTOP();
+}else if (command == "NF") {
+    nema17.moveForward(2000);
+} else if (command == "NB") {
+    nema17.moveBackward(2000);
+} else if (command == "NS") {
+    nema17.stopMotor();
+}
 
-    case Arm_Tennis_Up:
-      arm_tennis.Up();
-      state = STATE::Arm_Tennis_Deposit;
-      break;
 
-    case Arm_Tennis_Deposit:
-      arm_tennis.Deposit();
-      state = STATE::Tennis_Deliver_PLACEHOLDER;
-      break;
-
-    case Tennis_Deliver_PLACEHOLDER:
-      delay(1000);
-      state = STATE::Arm_Squash_Down;
-
-    case Arm_Squash_Down:
-      arm_squash.Down();
-      state = STATE::Arm_Squash_Collect;
-      break;
-
-    case Arm_Squash_Collect:
-      arm_squash.Collect();
-      state = STATE::Arm_Squash_Up;
-      break;
-
-    case Arm_Squash_Up:
-      arm_squash.Up();
-      state = STATE::Arm_Squash_Deposit;
-      break;
-
-    case Arm_Squash_Deposit:
-      arm_squash.Deposit();
-      state = STATE::Squash_Deliver_PLACEHOLDER;
-      break;
-
-    case Squash_Deliver_PLACEHOLDER:
-      state = STATE::End;
-      break;
-
-    case End:
-      state = STATE::Start;
-      break;
-
-    default:
-      state = STATE::Start;
+ else {
+  Serial.println("Unknown command");
+}
   }
+
+  // The emergency stop functionality based on button press can remain if you want
   if (button.checkPressed()) {
-    state = STATE::Start;
     arm_tennis.ESTOP();
     arm_squash.ESTOP();
   }
