@@ -7,10 +7,11 @@ private:
     const int dirPin;
     const int sleepPin;
     const int resetPin;
+    const int speed; // In microseconds
 
 public:
-    StepperMotor(int step, int dir, int sleep, int reset) 
-      : stepPin(step), dirPin(dir), sleepPin(sleep), resetPin(reset) {
+    StepperMotor(int step, int dir, int sleep, int reset, int speed = 800) 
+      : stepPin(step), dirPin(dir), sleepPin(sleep), resetPin(reset), speed(speed) {
         pinMode(stepPin, OUTPUT);
         pinMode(dirPin, OUTPUT);
         pinMode(sleepPin, OUTPUT);
@@ -22,9 +23,9 @@ public:
         digitalWrite(dirPin, HIGH);
         for (int i = 0; i < steps; i++) {
             digitalWrite(stepPin, HIGH);
-            delayMicroseconds(800);
+            delayMicroseconds(speed);
             digitalWrite(stepPin, LOW);
-            delayMicroseconds(800);
+            delayMicroseconds(speed);
         }
         disableDriver();
     }
@@ -34,9 +35,9 @@ public:
         digitalWrite(dirPin, LOW);
         for (int i = 0; i < steps; i++) {
             digitalWrite(stepPin, HIGH);
-            delayMicroseconds(800);
+            delayMicroseconds(speed);
             digitalWrite(stepPin, LOW);
-            delayMicroseconds(800);
+            delayMicroseconds(speed);
         }
         disableDriver();
     }
