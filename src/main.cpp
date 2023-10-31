@@ -86,6 +86,7 @@ void loop() {
       arm_squash.Down();
       state = STATE::Arm_Squash_Collect;
       break;
+    // Conflict
 
     case Arm_Squash_Collect:
       arm_squash.Collect();
