@@ -4,8 +4,8 @@
 class Servo {
   private:
     int _pin;
-    const byte open = 60;
-    const byte closed = 210;
+    const byte open = 240;
+    const byte closed = 60;
     byte _open;
     byte _closed;
 
