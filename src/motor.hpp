@@ -25,20 +25,20 @@ class Motor {
     };
 
     void Up() {
-      digitalWrite(_in1, HIGH);
-      digitalWrite(_in2, LOW);
+      digitalWrite(_in1, LOW);
+      digitalWrite(_in2, HIGH);
       analogWrite(_pwm, _speed_up);
     };
 
     void Down() {
-      digitalWrite(_in1, LOW);
-      digitalWrite(_in2, HIGH);
+      digitalWrite(_in1, HIGH);
+      digitalWrite(_in2, LOW);
       analogWrite(_pwm, _speed_down);
     };
 
     void Reverse() {
-      digitalWrite(_in1, HIGH);
-      digitalWrite(_in2, LOW);
+      digitalWrite(_in1, LOW);
+      digitalWrite(_in2, HIGH);
       analogWrite(_pwm, _speed_reverse);
     }
 

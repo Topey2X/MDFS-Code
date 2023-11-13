@@ -7,22 +7,22 @@
 #include "steppermotor.hpp"
 
 const int pin_Button = 10;
-const int pin_Servo1 = 8;
-const int pin_Servo2  = 9;
+const int pin_Squash_Servo = 8;
+const int pin_Tennis_Servo  = 9;
 const int pin_servoDep = 11;
 
-const int pin_Limit1_Up = 24;
-const int pin_Limit1_Down = 22;
-const int pin_Limit2_Up  = 28;
-const int pin_Limit2_Down = 26;
+const int pin_Squash_Limit_Up = 24;
+const int pin_Squash_Limit_Down = 22;
+const int pin_Tennis_Limit_Up  = 28;
+const int pin_Tennis_Limit_Down = 26;
 
-const int pin_Motor1_PWM = 3;
-const int pin_Motor1_In1 = 38;
-const int pin_Motor1_In2 = 39;
+const int pin_Squash_Motor_PWM = 2;
+const int pin_Squash_Motor_In1 = 36;
+const int pin_Squash_Motor_In2 = 37;
 
-const int pin_Motor2_PWM = 2;
-const int pin_Motor2_In1 = 36;
-const int pin_Motor2_In2 = 37;
+const int pin_Tennis_Motor_PWM = 3;
+const int pin_Tennis_Motor_In1 = 38;
+const int pin_Tennis_Motor_In2 = 39;
 
 const int pin_Winch1_PWM = 4;
 const int pin_Winch1_In1 = 44;
@@ -31,21 +31,21 @@ const int pin_Winch1_In2 = 45;
 Button button = Button(pin_Button);
 
 // Setup Arms
-Button* limit1_up = new Button(pin_Limit1_Up);
-Button* limit1_down = new Button(pin_Limit1_Down);
-Button* limit2_up = new Button(pin_Limit2_Up);
-Button* limit2_down = new Button(pin_Limit2_Down);
+Button* squash_Limit_up = new Button(pin_Squash_Limit_Up);
+Button* squash_Limit_down = new Button(pin_Squash_Limit_Down);
+Button* tennis_limit_up = new Button(pin_Tennis_Limit_Up);
+Button* tennis_limit_down = new Button(pin_Tennis_Limit_Down);
 
-Motor* motor1 = new Motor(pin_Motor1_In1,pin_Motor1_In2,pin_Motor1_PWM, 40);
-Motor* motor2 = new Motor(pin_Motor2_In1,pin_Motor2_In2,pin_Motor2_PWM, 10);
-Motor* winch1 = new Motor(pin_Winch1_In1,pin_Winch1_In2,pin_Winch1_PWM);
+Motor* squash_motor = new Motor(pin_Squash_Motor_In1,pin_Squash_Motor_In2,pin_Squash_Motor_PWM, 40, 150, 200);
+Motor* tennis_motor = new Motor(pin_Tennis_Motor_In1,pin_Tennis_Motor_In2,pin_Tennis_Motor_PWM, 10);
+Motor* winch1 = new Motor(pin_Winch1_In1,pin_Winch1_In2,pin_Winch1_PWM, 50, 50, 150);
 
-Servo* servo1 = new Servo(pin_Servo1, false);
-Servo* servo2 = new Servo(pin_Servo2, true);
+Servo* squash_servo = new Servo(pin_Squash_Servo, false);
+Servo* tennis_servo = new Servo(pin_Tennis_Servo, true);
 Servo* depServo = new Servo(pin_servoDep, false);
 
-Arm arm_squash = Arm(servo1, limit1_down, limit1_up, motor1);
-Arm arm_tennis = Arm(servo2, limit2_down, limit2_up, motor2);
+Arm arm_squash = Arm(squash_servo, squash_Limit_down, squash_Limit_up, squash_motor);
+Arm arm_tennis = Arm(tennis_servo, tennis_limit_down, tennis_limit_up, tennis_motor, 350, 800);
 // StepperMotor nema17 = StepperMotor(pin_Stepper_Step, pin_Stepper_Dir, pin_Stepper_Sleep, pin_Stepper_Reset);
 
 
@@ -97,7 +97,7 @@ if (command == "TU") {
   arm_tennis.Down();
 } else if (command == "TC") {
   arm_tennis.Collect();
-} else if (command == "TL") {
+} else if (command == "TR") {
   arm_tennis.Deposit();
 } else if (command == "TE") {
   arm_tennis.ESTOP();
@@ -107,35 +107,29 @@ if (command == "TU") {
   arm_squash.Down();
 } else if (command == "SC") {
   arm_squash.Collect();
-} else if (command == "SL") {
+} else if (command == "SR") {
   arm_squash.Deposit();
 } else if (command == "SE") {
   arm_squash.ESTOP();
-// }else if (command == "NF") {
-//     nema17.moveForward(500,4000);
-// } else if (command == "NB") {
-//     nema17.moveBackward(500,4000);
-// } else if (command == "NS") {
-//     nema17.stopMotor();
 } else if (command == "DC") {
     depServo->Close(); 
 } else if (command == "DO"){
     depServo->Open(); 
-} else if (command == "W1I") {
-  winch1->Up();
-  delay(200);
-  winch1->Stop();
-} else if (command == "W1O") {
+} else if (command == "WSI") {
   winch1->Down();
   delay(200);
   winch1->Stop();
-} else if (command == "W1R") {
+} else if (command == "WSO") {
   winch1->Up();
-  delay(1000);
+  delay(200);
   winch1->Stop();
-} else if (command == "W1E") {
+} else if (command == "WSR") {
   winch1->Down();
   delay(1000);
+  winch1->Stop();
+} else if (command == "WSE") {
+  winch1->Up();
+  delay(2000);
   winch1->Stop();
 }
 
