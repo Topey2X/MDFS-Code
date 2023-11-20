@@ -7,8 +7,8 @@
 #include "steppermotor.hpp"
 
 const int pin_Button = 10;
-const int pin_Squash_Servo = 8;
-const int pin_Tennis_Servo  = 9;
+const int pin_Squash_Servo = 9;
+const int pin_Tennis_Servo  = 8;
 const int pin_servoDep = 11;
 
 const int pin_Squash_Limit_Up = 24;
@@ -43,6 +43,8 @@ Button* tennis_limit_down = new Button(pin_Tennis_Limit_Down);
 Motor* squash_motor = new Motor(pin_Squash_Motor_In1,pin_Squash_Motor_In2,pin_Squash_Motor_PWM, 40, 150, 200);
 Motor* tennis_motor = new Motor(pin_Tennis_Motor_In1,pin_Tennis_Motor_In2,pin_Tennis_Motor_PWM, 10);
 Motor* winch1 = new Motor(pin_Winch1_In1,pin_Winch1_In2,pin_Winch1_PWM, 50, 50, 150);
+Motor* winch2 = new Motor(pin_Winch2_In1, pin_Winch2_In2, pin_Winch2_PWM, 50, 50, 150);
+
 
 Servo* squash_servo = new Servo(pin_Squash_Servo, false);
 Servo* tennis_servo = new Servo(pin_Tennis_Servo, true);
@@ -85,14 +87,30 @@ void loop() {
 }
 
 void loop_manual() {
-  // Check if data is available to read from the serial port
+  // Check if there is data available to read from the serial port
   if (Serial.available()) {
-    // Read the incoming byte
-    String command = Serial.readStringUntil('\n');
+    // Read the incoming command line until a newline character is encountered
+    String commandLine = Serial.readStringUntil('\n');
+    // Remove any leading and trailing whitespace or newline characters
+    commandLine.trim();
+    // Convert the command line to uppercase for consistent command handling
+    commandLine.toUpperCase();
 
-    // Remove any whitespace or newline characters
-    command.trim();
-    command.toUpperCase();
+    // Find the position of the left parenthesis '(' in the command line
+    int leftParen = commandLine.indexOf('(');
+    // Find the position of the right parenthesis ')' in the command line
+    int rightParen = commandLine.indexOf(')');
+    // Initialize 'command' with the full command line
+    String command = commandLine;
+    // Set a default argument value for delay, used if no argument is provided
+    int argument = 200;
+    // Check if both parentheses are found in the command line
+    if (leftParen != -1 && rightParen != -1) {
+      // Extract the command part (before the left parenthesis)
+      command = commandLine.substring(0, leftParen);
+      // Extract the argument part (between the parentheses) and convert it to an integer
+      argument = commandLine.substring(leftParen + 1, rightParen).toInt();
+    }
 
     // Parse the received command and execute the corresponding function
 if (command == "TU") {
@@ -107,6 +125,9 @@ if (command == "TU") {
   arm_tennis.ESTOP();
 } else if (command == "SU") {
   arm_squash.Up();
+} else if (command == "SUL") {
+  arm_squash.Deposit();
+  arm_squash.Up();
 } else if (command == "SD") {
   arm_squash.Down();
 } else if (command == "SC") {
@@ -119,28 +140,29 @@ if (command == "TU") {
     depServo->Close(); 
 } else if (command == "DO"){
     depServo->Open(); 
-} else if (command == "WSI") {
-  winch1->Down();
-  delay(2000);
-  winch1->Stop();
-} else if (command == "WSO") {
-  winch1->Up();
-  delay(2000);
-  winch1->Stop();
-} else if (command == "WSR") {
-  winch1->Down();
-  delay(1000);
-  winch1->Stop();
-} else if (command == "WSE") {
-  winch1->Up();
-  delay(2000);
-  winch1->Stop();
-}
+} else if (command == "WSD") {
+      winch1->Down(); // Move winch1 down
+      delay(argument); // Delay for the specified time in the argument
+      winch1->Stop(); // Stop winch1 movement
+    } else if (command == "WSU") {
+      winch1->Up(); // Move winch1 up
+      delay(argument); // Delay for the specified time in the argument
+      winch1->Stop(); // Stop winch1 movement
+    }
 
-
- else {
-  Serial.println("Unknown command");
-}
+    // Winch2 Commands
+    else if (command == "WTD") {
+      winch2->Down(); // Move winch2 down
+      delay(argument); // Delay for the specified time in the argument
+      winch2->Stop(); // Stop winch2 movement
+    } else if (command == "WTU") {
+      winch2->Up(); // Move winch2 up
+      delay(argument); // Delay for the specified time in the argument
+      winch2->Stop(); // Stop winch2 movement
+    } else {
+      // Print an error message if an unknown command is received
+      Serial.println("Unknown command");
+    }
   }
 }
 
