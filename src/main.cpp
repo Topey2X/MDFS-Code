@@ -16,17 +16,21 @@ const int pin_Squash_Limit_Down = 22;
 const int pin_Tennis_Limit_Up  = 28;
 const int pin_Tennis_Limit_Down = 26;
 
-const int pin_Squash_Motor_PWM = 2;
-const int pin_Squash_Motor_In1 = 36;
+const int pin_Squash_Motor_PWM = 2; // Squash is correct. 
+const int pin_Squash_Motor_In1 = 39;
 const int pin_Squash_Motor_In2 = 37;
 
-const int pin_Tennis_Motor_PWM = 3;
+const int pin_Tennis_Motor_PWM = 3; // tennis correct 
 const int pin_Tennis_Motor_In1 = 38;
-const int pin_Tennis_Motor_In2 = 39;
+const int pin_Tennis_Motor_In2 = 36;
 
-const int pin_Winch1_PWM = 4;
-const int pin_Winch1_In1 = 44;
-const int pin_Winch1_In2 = 45;
+const int pin_Winch1_PWM = 4; // winch 1 squash correct 
+const int pin_Winch1_In1 = 30;
+const int pin_Winch1_In2 = 31;
+
+const int pin_Winch2_PWM = 5; // winch 2 tennis correct 
+const int pin_Winch2_In1 = 28;
+const int pin_Winch2_In2 = 29;
 
 Button button = Button(pin_Button);
 
@@ -117,11 +121,11 @@ if (command == "TU") {
     depServo->Open(); 
 } else if (command == "WSI") {
   winch1->Down();
-  delay(200);
+  delay(2000);
   winch1->Stop();
 } else if (command == "WSO") {
   winch1->Up();
-  delay(200);
+  delay(2000);
   winch1->Stop();
 } else if (command == "WSR") {
   winch1->Down();
