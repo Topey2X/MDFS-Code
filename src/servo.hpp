@@ -14,8 +14,8 @@ class Servo {
       _open = reversed ? closed : open;
       _closed = reversed ? open : closed;
       pinMode(_pin, OUTPUT);
-      Open();
-      // Close();
+      // Open();
+      Close();
     };
 
     void Open() {

@@ -24,11 +24,14 @@ class Motor {
       analogWrite(_pwm, 0);
     };
 
-    void Up() {
+    void Up(int speed) {
       digitalWrite(_in1, LOW);
       digitalWrite(_in2, HIGH);
       analogWrite(_pwm, _speed_up);
     };
+    void Up() {
+      return Up(_speed_up);
+    }
 
     void Down() {
       digitalWrite(_in1, HIGH);

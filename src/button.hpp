@@ -13,7 +13,6 @@ class Button {
 
     bool checkPressed() {
       bool button_state = !digitalRead(_pin);
-
       if (button_state) {
         if (not triggered) {
           if (not latch) {

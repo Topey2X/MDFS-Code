@@ -8,23 +8,22 @@
 class Arm
 {  
 public:
-  Arm(Servo* flap, Button* limit_bottom, Button* limit_top, Motor* motor, int time_down = 350, int time_up = 1000, int time_reverse = 1000);
-
-  void Down();
-  void Collect();
-  void Up();
-  void Deposit();
-  void ESTOP();
-
   Servo* _flap;
   Button* _limit_bottom;
   Button* _limit_top;
   Motor* _motor;
 
-  const int _time_down = 350;
-  const int _time_reverse = 1000;
-  const int _time_up = 1000;
-  const int time_flap = 1000;
+  const unsigned long _time_down;
+  const unsigned long _time_up;
+  const unsigned long _time_reverse;
+  const unsigned long time_flap = 1000;
+  
+  Arm(Servo* flap, Button* limit_bottom, Button* limit_top, Motor* motor, int time_down = 350, int time_up = 800, int time_reverse = 1000);
+  void Down();
+  void Collect();
+  void Up();
+  void Deposit();
+  void ESTOP();
 };
 
 Arm::Arm(Servo* flap, Button* limit_bottom, Button* limit_top, Motor* motor, int time_down, int time_up, int time_reverse)
@@ -36,20 +35,17 @@ void Arm::Down() {
   _motor->Down();
   auto ms = millis();
 
-  while((not _limit_bottom->checkPressed()) and (millis()-ms < _time_down)) {
+  while(millis()-ms < _time_down) {
     continue;
   }
+  ms = millis();
 
   _motor->Reverse();
-      while((not _limit_bottom->checkPressed()) and (millis()-ms < _time_reverse)) {
+      while(millis()-ms < _time_reverse) {
         continue;
       }
 
   _motor->Stop();
-  ms = millis();
-  while((not _limit_bottom->checkPressed()) and (millis()-ms < 1000)) {
-    continue;
-  }
 }
 
 void Arm::Collect() {
@@ -60,7 +56,7 @@ void Arm::Collect() {
 void Arm::Up() {
   _motor->Up();
   auto ms = millis();
-  while((not _limit_top->checkPressed()) and (millis()-ms < _time_up)) {
+  while(millis()-ms < _time_up) {
     continue;
   }
   _motor->Stop();
