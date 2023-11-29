@@ -49,7 +49,7 @@ Button* tennis_limit_up = new Button(pin_Tennis_Limit_Up);
 Button* tennis_limit_down = new Button(pin_Tennis_Limit_Down);
 
 Motor* squash_motor = new Motor(pin_Squash_Motor_In1,pin_Squash_Motor_In2,pin_Squash_Motor_PWM, 40, 150, 230);
-Motor* tennis_motor = new Motor(pin_Tennis_Motor_In1,pin_Tennis_Motor_In2,pin_Tennis_Motor_PWM, 50, 200);
+Motor* tennis_motor = new Motor(pin_Tennis_Motor_In1,pin_Tennis_Motor_In2,pin_Tennis_Motor_PWM);
 Motor* winch1 = new Motor(pin_Winch1_In1,pin_Winch1_In2,pin_Winch1_PWM, 50, 50, 160);
 Motor* winch2 = new Motor(pin_Winch2_In1, pin_Winch2_In2, pin_Winch2_PWM, 50, 50, 255);
 
@@ -59,7 +59,7 @@ Servo* tennis_servo = new Servo(pin_Tennis_Servo, true);
 Servo* depServo = new Servo(pin_servoDep, false);
 
 Arm arm_squash = Arm(squash_servo, squash_Limit_down, squash_Limit_up, squash_motor);
-Arm arm_tennis = Arm(tennis_servo, tennis_limit_down, tennis_limit_up, tennis_motor, 400, 700);
+Arm arm_tennis = Arm(tennis_servo, tennis_limit_down, tennis_limit_up, tennis_motor, 300, 700);
 // StepperMotor nema17 = StepperMotor(pin_Stepper_Step, pin_Stepper_Dir, pin_Stepper_Sleep, pin_Stepper_Reset);
 
 auto ms = millis();
@@ -247,7 +247,7 @@ void loop_auto() {
       delay(400);
       arm_squash._flap->Open();
       delay(300);
-      arm_squash._motor->Up(100);
+      arm_squash._motor->Up(80);
       delay(300);
       arm_squash._motor->Stop();
       delay(2000);
@@ -256,7 +256,7 @@ void loop_auto() {
     case 4: // Extend squash slider
       arm_squash.Down();
       delay(200);
-      winch1->Up(160);
+      winch1->Up(200);
       delay(3000);
       winch1->Stop();
       delay(3000);
